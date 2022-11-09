@@ -1,23 +1,28 @@
 {
-    "env": {
-        "browser": true,
-        "es2021": true
-    },
-    "extends": "standard-with-typescript",
-    "overrides": [
-    ],
-    "parserOptions": {
-        "ecmaVersion": "latest",
-        "sourceType": "module",
-        "project": ["tsconfig.json"]
-    },
-    "rules": {
-        "@typescript-eslint/semi": ["error", "always"],
-        "space-before-function-paren": "off",
-        "@typescript-eslint/space-before-function-paren": ["error", {
-          "anonymous": "always",
-          "named": "never",
-          "asyncArrow": "always"
-        }]
-    }
+  "env": {
+      "browser": true,
+      "es2021": true
+  },
+  "extends": "standard-with-typescript",
+  "overrides": [
+  ],
+  "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module",
+      "project": ["tsconfig.json"]
+  },
+  "rules": {
+      "@typescript-eslint/semi": ["error", "always"],
+      "space-before-function-paren": "off",
+      "@typescript-eslint/space-before-function-paren": ["error", {
+        "anonymous": "always",
+        "named": "never",
+        "asyncArrow": "always"
+      }],
+      "@typescript-eslint/no-misused-promises": ["error", { // Express 4 doesn't support async handlers yet.
+        "checksVoidReturn": {
+          "arguments": false
+        }
+      }]
+  }
 }

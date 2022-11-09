@@ -9,7 +9,6 @@ export enum NoteType {
 }
 
 export class Note {
-  public id: string;
   public name: string;
   public visibility: NoteVisibility;
   public type: NoteType;
