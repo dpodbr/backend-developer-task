@@ -10,7 +10,7 @@ export class UsersController {
       res.status(200).send(users);
     } catch (err) {
       logger.error('getUsers failed.', err);
-      res.status(500).send((err as Error).message);
+      res.status(500).json({ message: (err as Error).message });
     }
   }
 }

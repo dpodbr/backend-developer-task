@@ -1,28 +1,20 @@
 import 'dotenv/config';
 import express, { Express } from 'express';
-import { User } from 'src/models/entities/user';
 import { usersRoutes } from 'src/routes/usersRoutes';
 import { databaseService } from 'src/services/databaseService';
-import { usersService } from 'src/services/usersService';
 import { logger } from 'src/utils/logger';
-import basicAuth from 'express-basic-auth';
+import { authHandlerMiddleware } from 'src/middlewares/authHandlerMiddleware';
 
 const app: Express = express();
 
 databaseService
   .openConnection()
   .then(async () => {
-    // Load users / passwords for basic auth.
-    const users: User[] = await usersService.getUsers();
-    const authData: any = {};
-
-    for (const user of users) {
-      authData[user.username] = user.password;
-    }
-
-    app.use(basicAuth({
-      users: authData
-    }));
+    // Setup auth middleware.
+    await authHandlerMiddleware.loadCredentials();
+    app.use((req, res, next) => {
+      return authHandlerMiddleware.authenticateCredentials(req, res, next);
+    });
   })
   .then(() => {
     // Setup router and start server.
