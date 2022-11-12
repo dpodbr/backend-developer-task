@@ -16,7 +16,10 @@ export class AuthHandlerMiddleware {
     const users: User[] = await usersService.getUsers();
 
     for (const user of users) {
-      this.credentials[user.username] = user.password;
+      this.credentials[user.username] = {
+        id: user._id,
+        password: user.password
+      };
     }
   }
 
@@ -28,7 +31,7 @@ export class AuthHandlerMiddleware {
     let username: string = '';
     let password: string = '';
 
-    if (req.headers?.authorization == null || !req.headers.authorization.includes('Basic ')) {
+    if (req.headers?.authorization === undefined || !req.headers.authorization.includes('Basic ')) {
       logger.info('Missing auth header.', req.headers);
       res.status(401).json({ message: 'Missing auth header.' });
       return;
@@ -40,7 +43,8 @@ export class AuthHandlerMiddleware {
       password = split[1];
     }
 
-    if (this.credentials[username] != null && bcrypt.compareSync(password, this.credentials[username])) {
+    if (this.credentials[username] !== undefined && bcrypt.compareSync(password, this.credentials[username].password)) {
+      req.userId = this.credentials[username].id;
       next();
     } else {
       logger.info('Wrong username / password.', req.headers);
