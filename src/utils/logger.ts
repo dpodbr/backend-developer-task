@@ -1,6 +1,7 @@
 enum LoggerLevel {
   Info = '[info]',
-  Error = '[error]'
+  Error = '[error]',
+  Warning = '[warning]'
 }
 
 export class Logger {
@@ -10,6 +11,10 @@ export class Logger {
 
   public info(text: string, ...params: any): void {
     this.log(LoggerLevel.Info, text, ...params);
+  }
+
+  public warning(text: string, ...params: any): void {
+    this.log(LoggerLevel.Warning, text, ...params);
   }
 
   public error(text: string, ...params: any): void {

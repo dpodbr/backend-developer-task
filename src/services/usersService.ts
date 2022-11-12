@@ -1,4 +1,4 @@
-import { User } from 'src/models/entities/user';
+import { User } from 'src/models/user';
 import { databaseService } from './databaseService';
 
 export class UsersService {

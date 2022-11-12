@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { User } from 'src/models/entities/user';
+import { User } from 'src/models/user';
 import { usersService } from 'src/services/usersService';
 import { logger } from 'src/utils/logger';
 
