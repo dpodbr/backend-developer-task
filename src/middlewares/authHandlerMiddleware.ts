@@ -27,14 +27,18 @@ export class AuthHandlerMiddleware {
     return bcrypt.hashSync(password, this.saltRounds);
   }
 
-  public authenticateCredentials(req: Request, res: Response, next: NextFunction): void {
+  public authenticateCredentials(req: Request, res: Response, next: NextFunction, optionalAuth: boolean = false): void {
     let username: string = '';
     let password: string = '';
 
     if (req.headers?.authorization === undefined || !req.headers.authorization.includes('Basic ')) {
-      logger.info('Missing auth header.', req.headers);
-      res.status(401).json({ message: 'Missing auth header.' });
-      return;
+      if (optionalAuth) {
+        return next();
+      } else {
+        logger.info('Missing auth header.', req.headers);
+        res.status(401).json({ message: 'Missing auth header.' });
+        return;
+      }
     } else {
       const base64Credentials = req.headers.authorization.split(' ')[1];
       const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');

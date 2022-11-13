@@ -23,6 +23,16 @@
         "checksVoidReturn": {
           "arguments": false
         }
+      }],
+      "@typescript-eslint/member-delimiter-style": ["error", {
+        "overrides": {
+          "interface": {
+            "multiline": {
+              "delimiter": "semi",
+              "requireLast": true
+            }
+          }
+        }
       }]
   }
 }

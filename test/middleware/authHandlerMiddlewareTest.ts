@@ -104,4 +104,14 @@ describe('authHandlerMiddleware authentication.', () => {
     assert.calledWith(statusReturn.json, { message: 'Missing auth header.' });
     assert.match(req.userId, undefined);
   });
+
+  it('Should pass missing authorization header if optionalAuth is true', async () => {
+    const next: any = stub();
+    const req: any = mock();
+    const res: any = mock();
+
+    await authHandlerMiddleware.authenticateCredentials(req, res, next, true);
+    assert.called(next);
+    assert.match(req.userId, undefined);
+  });
 });
