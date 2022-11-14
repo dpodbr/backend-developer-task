@@ -1,0 +1,97 @@
+[{
+  "_id": {
+    "$oid": "63720a082626d6aa42877874"
+  },
+  "folders": [
+    {
+      "_id": {
+        "$oid": "6372149b2626d6aa4287787a"
+      },
+      "name": "Uncategorized David",
+      "notes": [
+        {
+          "$oid": "637219d52626d6aa4287788d"
+        }
+      ]
+    },
+    {
+      "_id": {
+        "$oid": "637215192626d6aa4287787e"
+      },
+      "name": "Vacations David",
+      "notes": []
+    },
+    {
+      "_id": {
+        "$oid": "637215ec2626d6aa42877880"
+      },
+      "name": "Work related David",
+      "notes": []
+    }
+  ],
+  "name": "David Po",
+  "password": "",
+  "username": "davidpo"
+},
+{
+  "_id": {
+    "$oid": "637216f02626d6aa42877883"
+  },
+  "folders": [
+    {
+      "name": "Uncategorized Neza",
+      "notes": [],
+      "_id": {
+        "$oid": "6372178d2626d6aa42877885"
+      }
+    },
+    {
+      "name": "Vacations Neza",
+      "notes": [],
+      "_id": {
+        "$oid": "637217b12626d6aa42877886"
+      }
+    },
+    {
+      "name": "Work related Neza",
+      "notes": [],
+      "_id": {
+        "$oid": "637217c22626d6aa42877887"
+      }
+    }
+  ],
+  "name": "Neza Ga",
+  "password": "",
+  "username": "nezaga"
+},
+{
+  "_id": {
+    "$oid": "6372172b2626d6aa42877884"
+  },
+  "folders": [
+    {
+      "name": "Uncategorized Larisa",
+      "notes": [],
+      "_id": {
+        "$oid": "637217fd2626d6aa42877888"
+      }
+    },
+    {
+      "name": "Vacations Larisa",
+      "notes": [],
+      "_id": {
+        "$oid": "6372180b2626d6aa42877889"
+      }
+    },
+    {
+      "name": "Playing related Larisa",
+      "notes": [],
+      "_id": {
+        "$oid": "637218182626d6aa4287788a"
+      }
+    }
+  ],
+  "name": "Larisa Po",
+  "password": "",
+  "username": "larisapo"
+}]

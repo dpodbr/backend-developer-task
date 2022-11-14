@@ -1,0 +1,13 @@
+[{
+  "_id": {
+    "$oid": "637219d52626d6aa4287788d"
+  },
+  "items": [],
+  "name": "Daily notes",
+  "ownerUserId": {
+    "$oid": "63720a082626d6aa42877874"
+  },
+  "text": "Today was foggy and cold.",
+  "type": 0,
+  "visibility": 0
+}]
