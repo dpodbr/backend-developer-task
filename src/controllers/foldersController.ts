@@ -1,53 +1,35 @@
 import { Request, Response } from 'express';
 import { Folder } from 'src/models/folder';
 import { foldersService } from 'src/services/foldersService';
-import { logger } from 'src/utils/logger';
+import { handleError } from 'src/utils/errorHandler';
 
 export class FoldersController {
   public async getFolders(req: Request, res: Response): Promise<void> {
     try {
-      const result: Folder[] | null = await foldersService.getFolders(req.userId);
-      if (result !== null) {
-        res.status(200).send(result);
-      } else {
-        res.status(500).send({ message: 'Folders retrieval failed.' });
-        logger.warning('getFolders failed.', req);
-      }
+      const folders: Folder[] = await foldersService.getFolders(req.userId);
+      res.status(200).send(folders);
     } catch (err) {
-      logger.error('getFolders failed.', err);
-      res.status(500).json({ message: (err as Error).message });
+      handleError('getFolders', err, res);
     }
   }
 
   public async getFolder(req: Request, res: Response): Promise<void> {
     try {
       const folderId: string = req.params.id;
-      const result: Folder | null = await foldersService.getFolder(req.userId, folderId);
-      if (result !== null) {
-        res.status(200).send(result);
-      } else {
-        res.status(500).send({ message: 'Folder retrieval failed.' });
-        logger.warning('getFolder failed.', req);
-      }
+      const folder: Folder = await foldersService.getFolder(req.userId, folderId);
+      res.status(200).send(folder);
     } catch (err) {
-      logger.error('getFolder failed.', err);
-      res.status(500).json({ message: (err as Error).message });
+      handleError('getFolder', err, res);
     }
   }
 
   public async createFolder(req: Request, res: Response): Promise<void> {
     try {
       const folder: Folder = req.body as Folder;
-      const result: Folder | null = await foldersService.createFolder(req.userId, folder);
-      if (result !== null) {
-        res.status(201).send(result);
-      } else {
-        res.status(500).send({ message: 'Folder creation failed.' });
-        logger.warning('createFolder failed.', req);
-      }
+      const createdFolder: Folder = await foldersService.createFolder(req.userId, folder);
+      res.status(201).send(createdFolder);
     } catch (err) {
-      logger.error('createFolder failed.', err);
-      res.status(500).json({ message: (err as Error).message });
+      handleError('createFolder', err, res);
     }
   }
 
@@ -55,32 +37,20 @@ export class FoldersController {
     try {
       const folderId: string = req.params.id;
       const folder: Folder = req.body as Folder;
-      const result: Folder | null = await foldersService.updateFolder(req.userId, folderId, folder);
-      if (result !== null) {
-        res.status(200).send(result);
-      } else {
-        res.status(500).send({ message: 'Folder update failed.' });
-        logger.warning('updateFolder failed.', req);
-      }
+      const updatedFolder: Folder = await foldersService.updateFolder(req.userId, folderId, folder);
+      res.status(200).send(updatedFolder);
     } catch (err) {
-      logger.error('updateFolder failed.', err);
-      res.status(500).json({ message: (err as Error).message });
+      handleError('updateFolder', err, res);
     }
   }
 
   public async deleteFolder(req: Request, res: Response): Promise<void> {
     try {
       const folderId: string = req.params.id;
-      const result: boolean = await foldersService.deleteFolder(req.userId, folderId);
-      if (result) {
-        res.status(200).send();
-      } else {
-        res.status(500).send({ message: 'Folder deletion failed.' });
-        logger.warning('deleteFolder failed.', req);
-      }
+      await foldersService.deleteFolder(req.userId, folderId);
+      res.status(204).send();
     } catch (err) {
-      logger.error('deleteFolder failed.', err);
-      res.status(500).json({ message: (err as Error).message });
+      handleError('deleteFolder', err, res);
     }
   }
 }

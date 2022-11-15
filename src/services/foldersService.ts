@@ -1,9 +1,10 @@
 import { ObjectId } from 'mongodb';
 import { Folder } from 'src/models/folder';
+import { APIError } from 'src/utils/apiError';
 import { databaseService } from './databaseService';
 
 export class FoldersService {
-  public async getFolders(userId: string): Promise<Folder[] | null> {
+  public async getFolders(userId: string): Promise<Folder[]> {
     const query: any = {
       _id: new ObjectId(userId)
     };
@@ -15,11 +16,11 @@ export class FoldersService {
     if (result?.folders !== undefined) {
       return result.folders as Folder[];
     } else {
-      return null;
+      throw new APIError(500, 'Folder retrieval failed.');
     }
   }
 
-  public async getFolder(userId: string, folderId: string): Promise<Folder | null> {
+  public async getFolder(userId: string, folderId: string): Promise<Folder> {
     const query: any = {
       _id: new ObjectId(userId)
     };
@@ -36,19 +37,22 @@ export class FoldersService {
       // Document was found, so check folders result.
       if (result.folders !== undefined) {
         if (result.folders.length > 1) {
+          // Should never happen.
           throw new Error('Multiple folders found, expected one.');
         } else if (result.folders.length === 1) {
           return result.folders[0] as Folder;
+        } else {
+          throw new APIError(404, 'Folder not found.');
         }
       } else {
-        throw new Error('Folder not found.');
+        throw new APIError(404, 'Folder not found.');
       }
+    } else {
+      throw new APIError(404, 'User not found.');
     }
-
-    return null;
   }
 
-  public async createFolder(userId: string, folder: Folder): Promise<Folder | null> {
+  public async createFolder(userId: string, folder: Folder): Promise<Folder> {
     folder._id = new ObjectId();
 
     const query: any = {
@@ -65,11 +69,11 @@ export class FoldersService {
     if (result?.modifiedCount > 0) {
       return folder;
     } else {
-      return null;
+      throw new APIError(500, 'Folder creation failed.');
     }
   }
 
-  public async updateFolder(userId: string, folderId: string, folder: Folder): Promise<Folder | null> {
+  public async updateFolder(userId: string, folderId: string, folder: Folder): Promise<Folder> {
     const query: any = {
       _id: new ObjectId(userId),
       'folders._id': new ObjectId(folderId)
@@ -84,13 +88,16 @@ export class FoldersService {
     if (result?.matchedCount > 0) {
       return await this.getFolder(userId, folderId);
     } else if (result?.matchedCount === 0) {
-      throw new Error('Folder not found.');
+      throw new APIError(404, 'Folder not found.');
+    } else {
+      throw new APIError(500, 'Updated folder failed.');
     }
-
-    return null;
   }
 
-  public async deleteFolder(userId: string, folderId: string): Promise<boolean> {
+  public async deleteFolder(userId: string, folderId: string): Promise<void> {
+    // Get folder to get a list of notes in the folder.
+    const folder: Folder = await this.getFolder(userId, folderId);
+
     const query: any = {
       _id: new ObjectId(userId)
     };
@@ -102,13 +109,24 @@ export class FoldersService {
       }
     };
 
-    const result: any = (await databaseService.getUsersCollection().updateOne(query, update));
-    if (result?.modifiedCount > 0) {
-      return true;
-    } else if (result?.matchedCount > 0) {
-      throw new Error('Folder not found.');
+    const resultUsers: any = (await databaseService.getUsersCollection().updateOne(query, update));
+    if (resultUsers?.modifiedCount > 0) {
+      if (folder.notes.length > 0) {
+        const deleteQuery: any = {
+          _id: {
+            $in: folder.notes
+          }
+        };
+
+        const resultNotes = await databaseService.getNotesCollection().deleteMany(deleteQuery);
+        if (resultNotes?.deletedCount !== folder.notes.length) {
+          throw new APIError(500, 'Notes deletion failed.');
+        }
+      }
+    } else if (resultUsers?.matchedCount > 0) {
+      throw new APIError(404, 'Folder not found.');
     } else {
-      return false;
+      throw new APIError(500, 'Folder deletion failed.');
     }
   }
 }

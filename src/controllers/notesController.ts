@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
+import { Note } from 'src/models/note';
 import { GetNotesResponse, NotesPagination, notesService, NotesSorting } from 'src/services/notesService';
-import { logger } from 'src/utils/logger';
+import { APIError } from 'src/utils/apiError';
+import { handleError } from 'src/utils/errorHandler';
 
 export class NotesController {
   public async getNotes(req: Request, res: Response): Promise<void> {
@@ -27,7 +29,7 @@ export class NotesController {
             break;
           }
           default: {
-            throw new Error('Invalid sorting option.');
+            throw new APIError(400, 'Invalid sorting option.');
           }
         }
 
@@ -44,7 +46,7 @@ export class NotesController {
               break;
             }
             default: {
-              throw new Error('Invalid sorting direction option.');
+              throw new APIError(400, 'Invalid sorting direction option.');
             }
           }
         }
@@ -57,33 +59,57 @@ export class NotesController {
         if (page > 0 && limit > 0) {
           pagination = { page, limit };
         } else {
-          throw new Error('Invalid pagination values.');
+          throw new APIError(400, 'Invalid pagination values.');
         }
       }
 
-      const result: GetNotesResponse = await notesService.getNotes(req.userId, pagination, sorting);
-      if (result !== null) {
-        res.status(200).send(result);
-      } else {
-        res.status(500).send({ message: 'Notes retrieval failed.' });
-        logger.warning('getNotes failed.', req);
-      }
+      const response: GetNotesResponse = await notesService.getNotes(req.userId, pagination, sorting);
+      res.status(200).send(response);
     } catch (err) {
-      logger.error('getNotes failed.', err);
-      res.status(500).json({ message: (err as Error).message });
+      handleError('getNotes', err, res);
     }
   }
 
   public async getNote(req: Request, res: Response): Promise<void> {
+    try {
+      const noteId: string = req.params.id;
+      const note: Note = await notesService.getNote(noteId, req.userId);
+      res.status(200).send(note);
+    } catch (err) {
+      handleError('getNote', err, res);
+    }
   }
 
   public async createNote(req: Request, res: Response): Promise<void> {
+    try {
+      const note: Note = req.body as Note;
+      const folderId: string = req.params.folderId;
+      const createdNote: Note = await notesService.createNote(req.userId, folderId, note);
+      res.status(201).send(createdNote);
+    } catch (err) {
+      handleError('createNote', err, res);
+    }
   }
 
   public async updateNote(req: Request, res: Response): Promise<void> {
+    try {
+      const noteId: string = req.params.id;
+      const note: Note = req.body as Note;
+      const updatedNote: Note = await notesService.updateNote(req.userId, noteId, note);
+      res.status(200).send(updatedNote);
+    } catch (err) {
+      handleError('updateNote', err, res);
+    }
   }
 
   public async deleteNote(req: Request, res: Response): Promise<void> {
+    try {
+      const noteId: string = req.params.id;
+      await notesService.deleteNote(req.userId, noteId);
+      res.status(204).send();
+    } catch (err) {
+      handleError('deleteNote', err, res);
+    }
   }
 }
 

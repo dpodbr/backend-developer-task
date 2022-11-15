@@ -1,11 +1,11 @@
-enum LoggerLevel {
+export enum LoggerLevel {
   Info = '[info]',
   Error = '[error]',
   Warning = '[warning]'
 }
 
 export class Logger {
-  private log(level: LoggerLevel, text: string, ...params: any): void {
+  public log(level: LoggerLevel, text: string, ...params: any): void {
     console.log(level, new Date().toISOString(), text, ...params);
   }
 
