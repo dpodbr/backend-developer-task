@@ -30,7 +30,7 @@
     }
   ],
   "name": "David Po",
-  "password": "",
+  "password": "$2a$10$2Vd9BXcLw/rckaHOUmmWP.87hMzr3WeKXdJkxO5LFBgbA.lyfW2Ue",
   "username": "davidpo"
 },
 {
@@ -61,7 +61,7 @@
     }
   ],
   "name": "Neza Ga",
-  "password": "",
+  "password": "$2a$10$UVTmY1HE2GBmWsCMe7zuM.O/TWWyQmHGtUbBvlrhFLUmotroA4lLa",
   "username": "nezaga"
 },
 {
@@ -92,6 +92,6 @@
     }
   ],
   "name": "Larisa Po",
-  "password": "",
+  "password": "$2a$10$I/sWKQDfOAdzpxifvbs0duTum3IbQjl72z4vn6z9Y7qskT.zKKAlW",
   "username": "larisapo"
 }]

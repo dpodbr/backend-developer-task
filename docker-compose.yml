@@ -20,3 +20,15 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
     depends_on:
       - mongodb
+
+  notes_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: ${PORT}
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - mongodb
