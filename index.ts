@@ -4,7 +4,6 @@ import express, { Express } from 'express';
 import { authHandlerMiddleware } from 'src/middlewares/authHandlerMiddleware';
 import { foldersRoutes } from 'src/routes/foldersRoutes';
 import { notesRoutes, optionalAuthNotesRoutes } from 'src/routes/notesRoutes';
-import { usersRoutes } from 'src/routes/usersRoutes';
 import { databaseService } from 'src/services/databaseService';
 import { logger } from 'src/utils/logger';
 
@@ -28,7 +27,6 @@ databaseService
   })
   .then(() => {
     // Register required authenticaton routes.
-    app.use('/users', usersRoutes);
     app.use('/folders', foldersRoutes);
     app.use('/notes', notesRoutes);
     // Unmatched routes.
