@@ -64,7 +64,7 @@ export class NotesController {
       }
 
       const response: GetNotesResponse = await notesService.getNotes(req.userId, pagination, sorting);
-      res.status(200).send(response);
+      res.status(200).json(response);
     } catch (err) {
       handleError('getNotes', err, res);
     }
@@ -74,7 +74,7 @@ export class NotesController {
     try {
       const noteId: string = req.params.id;
       const note: Note = await notesService.getNote(noteId, req.userId);
-      res.status(200).send(note);
+      res.status(200).json(note);
     } catch (err) {
       handleError('getNote', err, res);
     }
@@ -85,7 +85,7 @@ export class NotesController {
       const note: Note = req.body as Note;
       const folderId: string = req.params.folderId;
       const createdNote: Note = await notesService.createNote(req.userId, folderId, note);
-      res.status(201).send(createdNote);
+      res.status(201).json(createdNote);
     } catch (err) {
       handleError('createNote', err, res);
     }
@@ -96,7 +96,7 @@ export class NotesController {
       const noteId: string = req.params.id;
       const note: Note = req.body as Note;
       const updatedNote: Note = await notesService.updateNote(req.userId, noteId, note);
-      res.status(200).send(updatedNote);
+      res.status(200).json(updatedNote);
     } catch (err) {
       handleError('updateNote', err, res);
     }
@@ -106,7 +106,7 @@ export class NotesController {
     try {
       const noteId: string = req.params.id;
       await notesService.deleteNote(req.userId, noteId);
-      res.status(204).send();
+      res.status(204).end();
     } catch (err) {
       handleError('deleteNote', err, res);
     }

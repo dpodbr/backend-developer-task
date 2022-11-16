@@ -1,6 +1,6 @@
-import { authHandlerMiddleware } from 'src/middlewares/authHandlerMiddleware';
-import { assert, mock, SinonStub, stub } from 'sinon';
 import bcrypt from 'bcryptjs';
+import { assert, mock, SinonStub, stub } from 'sinon';
+import { authHandlerMiddleware } from 'src/middlewares/authHandlerMiddleware';
 import { logger } from 'src/utils/logger';
 
 const userId: string = '12345';
@@ -8,7 +8,7 @@ const username: string = 'davidpo';
 const password: string = 'davidpo';
 const hashedPassword: string = '$2a$10$2Vd9BXcLw/rckaHOUmmWP.87hMzr3WeKXdJkxO5LFBgbA.lyfW2Ue';
 
-describe('authHandlerMiddleware password generator and validator.', () => {
+describe('AuthHandlerMiddleware password generator and validator.', () => {
   it('Should generate salted and hashed password.', () => {
     const output: string = authHandlerMiddleware.hashPassword(password);
     assert.match(output !== '', true);
@@ -23,7 +23,7 @@ describe('authHandlerMiddleware password generator and validator.', () => {
   });
 });
 
-describe('authHandlerMiddleware authentication.', () => {
+describe('AuthHandlerMiddleware authentication.', () => {
   let infoStub: SinonStub;
 
   before(() => {
