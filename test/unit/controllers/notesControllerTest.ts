@@ -76,4 +76,37 @@ describe('NotesController getNotes.', () => {
     assert.match(error.message, 'Invalid sorting option.');
   });
 
+  it('Should throw error for invalid sorting direction option.', async () => {
+    const req: any = {
+      query: {
+        sort: 'name',
+        dir: 'invalid direction option'
+      }
+    };
+    const res: any = mock();
+
+    await notesController.getNotes(req, res);
+
+    const error: APIError = handleErrorStub.getCall(0).args[1] as APIError;
+    assert.notCalled(getNotesStub);
+    assert.match(error.code, 400);
+    assert.match(error.message, 'Invalid sorting direction option.');
+  });
+
+  it('Should throw error for invalid pagination values.', async () => {
+    const req: any = {
+      query: {
+        page: 'invalid option',
+        limit: 0
+      }
+    };
+    const res: any = mock();
+
+    await notesController.getNotes(req, res);
+
+    const error: APIError = handleErrorStub.getCall(0).args[1] as APIError;
+    assert.notCalled(getNotesStub);
+    assert.match(error.code, 400);
+    assert.match(error.message, 'Invalid pagination values.');
+  });
 });
