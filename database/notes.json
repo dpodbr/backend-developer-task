@@ -3,11 +3,159 @@
     "$oid": "637219d52626d6aa4287788d"
   },
   "items": [],
-  "name": "Daily notes",
+  "name": "Davids uncategorized private text note",
   "ownerUserId": {
     "$oid": "63720a082626d6aa42877874"
   },
-  "text": "Today was foggy and cold.",
+  "text": "Text note",
   "type": 0,
   "visibility": 0
+},{
+  "_id": {
+    "$oid": "6374b76667adfc9f54a1637f"
+  },
+  "items": [],
+  "name": "Davids uncategorized public text note",
+  "text": "Text note",
+  "type": 0,
+  "visibility": 1,
+  "ownerUserId": {
+    "$oid": "63720a082626d6aa42877874"
+  }
+},{
+  "_id": {
+    "$oid": "6374b82d67adfc9f54a16380"
+  },
+  "items": [
+    "item1",
+    "item2",
+    "item3"
+  ],
+  "name": "Davids uncategorized private list note",
+  "text": "",
+  "type": 1,
+  "visibility": 0,
+  "ownerUserId": {
+    "$oid": "63720a082626d6aa42877874"
+  }
+},{
+  "_id": {
+    "$oid": "6374b83a67adfc9f54a16381"
+  },
+  "items": [
+    "item1",
+    "item2",
+    "item3"
+  ],
+  "name": "Davids uncategorized public list note",
+  "text": "",
+  "type": 1,
+  "visibility": 1,
+  "ownerUserId": {
+    "$oid": "63720a082626d6aa42877874"
+  }
+},{
+  "_id": {
+    "$oid": "6374b87267adfc9f54a16382"
+  },
+  "items": [
+    "item1",
+    "item2",
+    "item3"
+  ],
+  "name": "Davids vacations public list note",
+  "text": "",
+  "type": 1,
+  "visibility": 1,
+  "ownerUserId": {
+    "$oid": "63720a082626d6aa42877874"
+  }
+},{
+  "_id": {
+    "$oid": "6374b88367adfc9f54a16383"
+  },
+  "items": [],
+  "name": "Davids vacations private text note",
+  "text": "Text note",
+  "type": 0,
+  "visibility": 0,
+  "ownerUserId": {
+    "$oid": "63720a082626d6aa42877874"
+  }
+},{
+  "_id": {
+    "$oid": "6374b89a67adfc9f54a16384"
+  },
+  "items": [],
+  "name": "Davids work public text note",
+  "text": "Text note",
+  "type": 0,
+  "visibility": 1,
+  "ownerUserId": {
+    "$oid": "63720a082626d6aa42877874"
+  }
+},{
+  "_id": {
+    "$oid": "6374b8b267adfc9f54a16385"
+  },
+  "items": [
+    "item1",
+    "item2",
+    "item3"
+  ],
+  "name": "Davids work private list note",
+  "text": "",
+  "type": 1,
+  "visibility": 0,
+  "ownerUserId": {
+    "$oid": "63720a082626d6aa42877874"
+  }
+},{
+  "_id": {
+    "$oid": "6374bb7867adfc9f54a16387"
+  },
+  "items": [],
+  "name": "Nezas uncategorized private text note",
+  "text": "Text note",
+  "type": 0,
+  "visibility": 0,
+  "ownerUserId": {
+    "$oid": "637216f02626d6aa42877883"
+  }
+},{
+  "_id": {
+    "$oid": "6374bb8267adfc9f54a16388"
+  },
+  "items": [],
+  "name": "Nezas uncategorized public text note",
+  "text": "Text note",
+  "type": 0,
+  "visibility": 1,
+  "ownerUserId": {
+    "$oid": "637216f02626d6aa42877883"
+  }
+},{
+  "_id": {
+    "$oid": "6374bbbf67adfc9f54a16389"
+  },
+  "items": [],
+  "name": "Larisas uncategorized public text note",
+  "text": "Text note",
+  "type": 0,
+  "visibility": 1,
+  "ownerUserId": {
+    "$oid": "6372172b2626d6aa42877884"
+  }
+},{
+  "_id": {
+    "$oid": "6374bbd767adfc9f54a1638a"
+  },
+  "items": [],
+  "name": "Larisas uncategorized private text note",
+  "text": "Text note",
+  "type": 0,
+  "visibility": 0,
+  "ownerUserId": {
+    "$oid": "6372172b2626d6aa42877884"
+  }
 }]

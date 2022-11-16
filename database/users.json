@@ -11,6 +11,15 @@
       "notes": [
         {
           "$oid": "637219d52626d6aa4287788d"
+        },
+        {
+          "$oid": "6374b76667adfc9f54a1637f"
+        },
+        {
+          "$oid": "6374b82d67adfc9f54a16380"
+        },
+        {
+          "$oid": "6374b83a67adfc9f54a16381"
         }
       ]
     },
@@ -19,28 +28,48 @@
         "$oid": "637215192626d6aa4287787e"
       },
       "name": "Vacations David",
-      "notes": []
+      "notes": [
+        {
+          "$oid": "6374b87267adfc9f54a16382"
+        },
+        {
+          "$oid": "6374b88367adfc9f54a16383"
+        }
+      ]
     },
     {
       "_id": {
         "$oid": "637215ec2626d6aa42877880"
       },
       "name": "Work related David",
-      "notes": []
+      "notes": [
+        {
+          "$oid": "6374b89a67adfc9f54a16384"
+        },
+        {
+          "$oid": "6374b8b267adfc9f54a16385"
+        }
+      ]
     }
   ],
   "name": "David Po",
   "password": "$2a$10$2Vd9BXcLw/rckaHOUmmWP.87hMzr3WeKXdJkxO5LFBgbA.lyfW2Ue",
   "username": "davidpo"
-},
-{
+},{
   "_id": {
     "$oid": "637216f02626d6aa42877883"
   },
   "folders": [
     {
       "name": "Uncategorized Neza",
-      "notes": [],
+      "notes": [
+        {
+          "$oid": "6374bb7867adfc9f54a16387"
+        },
+        {
+          "$oid": "6374bb8267adfc9f54a16388"
+        }
+      ],
       "_id": {
         "$oid": "6372178d2626d6aa42877885"
       }
@@ -63,15 +92,21 @@
   "name": "Neza Ga",
   "password": "$2a$10$UVTmY1HE2GBmWsCMe7zuM.O/TWWyQmHGtUbBvlrhFLUmotroA4lLa",
   "username": "nezaga"
-},
-{
+},{
   "_id": {
     "$oid": "6372172b2626d6aa42877884"
   },
   "folders": [
     {
       "name": "Uncategorized Larisa",
-      "notes": [],
+      "notes": [
+        {
+          "$oid": "6374bbbf67adfc9f54a16389"
+        },
+        {
+          "$oid": "6374bbd767adfc9f54a1638a"
+        }
+      ],
       "_id": {
         "$oid": "637217fd2626d6aa42877888"
       }
