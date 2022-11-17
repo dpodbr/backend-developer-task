@@ -33,17 +33,23 @@ const note3: Note = {
   type: 0,
   visibility: 0
 };
+const notes: Note[] = [note1, note2, note3];
 
 describe('NotesService getNotes.', () => {
   it('Should be sorted with correct sorting options.', async () => {
     const sortStub: SinonStub = stub();
     const getNotesCollectionStub: SinonStub = stub(databaseService, 'getNotesCollection');
-
     databaseService.getNotesCollection = getNotesCollectionStub;
+
     getNotesCollectionStub.returns({
+      countDocuments: stub().returns(notes.length),
       find: stub().returns({
         sort: sortStub.returns({
-          toArray: stub().returns([note1, note2, note3])
+          skip: stub().returns({
+            limit: stub().returns({
+              toArray: stub().returns(notes)
+            })
+          })
         })
       })
     });
@@ -81,12 +87,20 @@ describe('NotesService getNotes.', () => {
   });
 
   it('Should paginate.', async () => {
+    const skipStub: SinonStub = stub();
+    const limitStub: SinonStub = stub();
     const getNotesCollectionStub: SinonStub = stub(databaseService, 'getNotesCollection');
     databaseService.getNotesCollection = getNotesCollectionStub;
+
     getNotesCollectionStub.returns({
+      countDocuments: stub().returns(notes.length),
       find: stub().returns({
         sort: stub().returns({
-          toArray: stub().returns([note1, note2, note3])
+          skip: skipStub.returns({
+            limit: limitStub.returns({
+              toArray: stub().returns(notes)
+            })
+          })
         })
       })
     });
@@ -107,29 +121,40 @@ describe('NotesService getNotes.', () => {
     };
 
     const response1: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination, sorting);
-    assert.match(response1.notes[0], note1);
-    assert.match(response1.notes.length, 1);
+    assert.calledWith(skipStub, 0);
+    assert.calledWith(limitStub, 1);
     assert.match(response1.page, 1);
     assert.match(response1.totalPages, 3);
+    skipStub.resetHistory();
+    limitStub.resetHistory();
 
     pagination.page = 2;
     const response2: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination, sorting);
-    assert.match(response2.notes[0], note2);
-    assert.match(response2.notes.length, 1);
+    assert.calledWith(skipStub, 1);
+    assert.calledWith(limitStub, 1);
     assert.match(response2.page, 2);
     assert.match(response2.totalPages, 3);
+    skipStub.resetHistory();
+    limitStub.resetHistory();
 
     pagination.page = 1;
     pagination.limit = 2;
     const response3: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination, sorting);
-    assert.match(response3.notes.length, 2);
+    assert.calledWith(skipStub, 0);
+    assert.calledWith(limitStub, 2);
     assert.match(response3.page, 1);
     assert.match(response3.totalPages, 2);
+    skipStub.resetHistory();
+    limitStub.resetHistory();
 
     pagination.page = 3;
     const response4: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination, sorting);
-    // Returns 0 length array if page > totalPages.
-    assert.match(response4.notes.length, 0);
+    assert.calledWith(skipStub, 4);
+    assert.calledWith(limitStub, 2);
+    assert.match(response4.page, 3);
+    assert.match(response4.totalPages, 2);
+    skipStub.resetHistory();
+    limitStub.resetHistory();
 
     getNotesCollectionStub.restore();
   });

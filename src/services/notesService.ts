@@ -29,7 +29,7 @@ export interface GetNotesResponse {
 export class NotesService {
   public async getNotes(userId?: string, pagination?: NotesPagination, sorting?: NotesSorting): Promise<GetNotesResponse> {
     // Get users private and others public notes.
-    const query: any = {
+    const query = {
       $or: [
         { ownerUserId: new ObjectId(userId) },
         { visibility: 1 }
@@ -51,16 +51,20 @@ export class NotesService {
       sort.visibility = 1;
     }
 
-    let notes: Note[] = (await databaseService.getNotesCollection().find(query).sort({ ...sort, _id: 1 }).toArray()) as Note[];
+    const notes: Note[] = (await databaseService
+      .getNotesCollection()
+      .find(query)
+      .sort({ ...sort, _id: 1 })
+      .skip(pagination !== undefined ? ((pagination.page - 1) * pagination.limit) : 0)
+      .limit(pagination !== undefined ? pagination.limit : 0)
+      .toArray()) as Note[];
+    const countTotal: number = (await databaseService.getNotesCollection().countDocuments(query));
 
     let page: number = 1;
     let totalPages: number = 1;
     if (pagination !== undefined) {
       page = pagination.page;
-      totalPages = Math.ceil(notes.length / pagination.limit);
-
-      // Pages from query should start with 1.
-      notes = notes.slice((pagination.page - 1) * pagination.limit, pagination.page * pagination.limit);
+      totalPages = Math.ceil(countTotal / pagination.limit);
     }
 
     return {
