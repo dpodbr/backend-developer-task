@@ -36,6 +36,7 @@ describe('AuthHandlerMiddleware authentication.', () => {
 
   after(() => {
     infoStub.restore();
+    (authHandlerMiddleware as any).credentials = {};
   });
 
   it('Should authenticate valid credentials.', async () => {

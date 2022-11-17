@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { assert, stub } from 'sinon';
+import { assert, SinonStub, stub } from 'sinon';
 import { Folder } from 'src/models/folder';
 import { databaseService } from 'src/services/databaseService';
 import { foldersService } from 'src/services/foldersService';
@@ -18,8 +18,18 @@ describe('FoldersService getFolder.', () => {
     notes: []
   };
 
+  let getUsersCollectionStub: SinonStub;
+  before(() => {
+    getUsersCollectionStub = stub(databaseService, 'getUsersCollection');
+    databaseService.getUsersCollection = getUsersCollectionStub;
+  });
+
+  after(() => {
+    getUsersCollectionStub.restore();
+  });
+
   it('Should return one and only folder in result.', async () => {
-    databaseService.getUsersCollection = stub().returns({
+    getUsersCollectionStub.returns({
       find: stub().returns({
         project: stub().returns({
           next: stub().returns({
@@ -33,7 +43,7 @@ describe('FoldersService getFolder.', () => {
   });
 
   it('Should throw error for multiple folders.', async () => {
-    databaseService.getUsersCollection = stub().returns({
+    getUsersCollectionStub.returns({
       find: stub().returns({
         project: stub().returns({
           next: stub().returns({
@@ -54,7 +64,7 @@ describe('FoldersService getFolder.', () => {
   });
 
   it('Should throw error folder not found when empty results.', async () => {
-    databaseService.getUsersCollection = stub().returns({
+    getUsersCollectionStub.returns({
       find: stub().returns({
         project: stub().returns({
           next: stub().returns({
