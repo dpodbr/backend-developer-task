@@ -147,7 +147,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/folders/63700b22489dc9b77e5fd8dc",
+					"raw": "http://localhost:8000/folders/6374f27fabbabe755511eb84",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -155,7 +155,7 @@
 					"port": "8000",
 					"path": [
 						"folders",
-						"63700b22489dc9b77e5fd8dc"
+						"6374f27fabbabe755511eb84"
 					]
 				}
 			},
@@ -191,7 +191,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/folders/6373d381c2cc3b931c8e7431",
+					"raw": "http://localhost:8000/folders/6374f27fabbabe755511eb84",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -199,7 +199,7 @@
 					"port": "8000",
 					"path": [
 						"folders",
-						"6373d381c2cc3b931c8e7431"
+						"6374f27fabbabe755511eb84"
 					]
 				}
 			},
@@ -260,7 +260,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8000/notes?page=1&limit=1&sort=name&dir=asc",
+					"raw": "http://localhost:8000/notes?page=1&limit=3&sortVisibility=desc&sortName=asc",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -276,14 +276,14 @@
 						},
 						{
 							"key": "limit",
-							"value": "1"
+							"value": "3"
 						},
 						{
-							"key": "sort",
-							"value": "name"
+							"key": "sortVisibility",
+							"value": "desc"
 						},
 						{
-							"key": "dir",
+							"key": "sortName",
 							"value": "asc"
 						}
 					]
@@ -312,7 +312,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8000/notes/6374b76667adfc9f54a1637f",
+					"raw": "http://localhost:8000/notes/6374b82d67adfc9f54a16380",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -320,7 +320,7 @@
 					"port": "8000",
 					"path": [
 						"notes",
-						"6374b76667adfc9f54a1637f"
+						"6374b82d67adfc9f54a16380"
 					]
 				}
 			},
@@ -348,7 +348,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"items\": [],\n  \"name\": \"Larisas uncategorized private text note\",\n  \"text\": \"Text note\",\n  \"type\": 0,\n  \"visibility\": 0\n}",
+					"raw": "{\n  \"items\": [],\n  \"name\": \"Larisas uncategorized private text note 2\",\n  \"text\": \"Text note\",\n  \"type\": 0,\n  \"visibility\": 0\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -421,13 +421,13 @@
 					"type": "basic",
 					"basic": [
 						{
-							"key": "password",
-							"value": "nezaga",
+							"key": "username",
+							"value": "davidpo",
 							"type": "string"
 						},
 						{
-							"key": "username",
-							"value": "nezaga",
+							"key": "password",
+							"value": "davidpo",
 							"type": "string"
 						}
 					]
@@ -444,7 +444,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/notes/6374bb4967adfc9f54a16386",
+					"raw": "http://localhost:8000/notes/637219d52626d6aa4287788d",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -452,7 +452,7 @@
 					"port": "8000",
 					"path": [
 						"notes",
-						"6374bb4967adfc9f54a16386"
+						"637219d52626d6aa4287788d"
 					]
 				}
 			},
