@@ -31,34 +31,23 @@ const note3: Note = {
   ownerUserId: userId2,
   text: '',
   type: 0,
-  visibility: 1
+  visibility: 0
 };
 
 describe('NotesService getNotes.', () => {
-  let getNotesCollectionStub: SinonStub;
+  it('Should be sorted with correct sorting options.', async () => {
+    const sortStub: SinonStub = stub();
+    const getNotesCollectionStub: SinonStub = stub(databaseService, 'getNotesCollection');
 
-  before(() => {
-    getNotesCollectionStub = stub(databaseService, 'getNotesCollection');
     databaseService.getNotesCollection = getNotesCollectionStub;
     getNotesCollectionStub.returns({
       find: stub().returns({
-        toArray: stub().returns([note1, note2, note3])
+        sort: sortStub.returns({
+          toArray: stub().returns([note1, note2, note3])
+        })
       })
     });
-  });
 
-  after(() => {
-    getNotesCollectionStub.restore();
-  });
-
-  it('Should filter out duplicated private / public notes.', async () => {
-    const response: GetNotesResponse = await notesService.getNotes(userId1.toString());
-
-    // Second call to getNotesCollection doesn't double the notes in the list - only the original 3 remain.
-    assert.match(response.notes.length, 3);
-  });
-
-  it('Should sort notes by sorting options in correct order.', async () => {
     const sorting: NotesSorting = {
       visibility: {
         sort: true,
@@ -70,41 +59,61 @@ describe('NotesService getNotes.', () => {
       }
     };
 
-    const response1: GetNotesResponse = await notesService.getNotes(userId1.toString(), undefined, sorting);
-    assert.match(response1.notes[0].visibility, 0);
-    assert.match(response1.notes[1].visibility, 1);
+    await notesService.getNotes(userId1.toString(), undefined, undefined);
+    assert.calledWith(sortStub, { visibility: 1, _id: 1 });
+    sortStub.resetHistory();
+
+    await notesService.getNotes(userId1.toString(), undefined, sorting);
+    assert.calledWith(sortStub, { visibility: 1, _id: 1 });
+    sortStub.resetHistory();
 
     sorting.visibility.ascending = false;
-    const response2: GetNotesResponse = await notesService.getNotes(userId1.toString(), undefined, sorting);
-    assert.match(response2.notes[0].visibility, 1);
-    assert.match(response2.notes[1].visibility, 1);
+    await notesService.getNotes(userId1.toString(), undefined, sorting);
+    assert.calledWith(sortStub, { visibility: -1, _id: 1 });
+    sortStub.resetHistory();
 
-    sorting.visibility.sort = false;
     sorting.name.sort = true;
-    const response3: GetNotesResponse = await notesService.getNotes(userId1.toString(), undefined, sorting);
-    assert.match(response3.notes[0], note1);
-    assert.match(response3.notes[1], note2);
+    sorting.name.ascending = true;
+    await notesService.getNotes(userId1.toString(), undefined, sorting);
+    assert.calledWith(sortStub, { visibility: -1, name: 1, _id: 1 });
 
-    sorting.name.ascending = false;
-    const response4: GetNotesResponse = await notesService.getNotes(userId1.toString(), undefined, sorting);
-    assert.match(response4.notes[0], note3);
-    assert.match(response4.notes[1], note2);
+    getNotesCollectionStub.restore();
   });
 
   it('Should paginate.', async () => {
+    const getNotesCollectionStub: SinonStub = stub(databaseService, 'getNotesCollection');
+    databaseService.getNotesCollection = getNotesCollectionStub;
+    getNotesCollectionStub.returns({
+      find: stub().returns({
+        sort: stub().returns({
+          toArray: stub().returns([note1, note2, note3])
+        })
+      })
+    });
+
+    const sorting: NotesSorting = {
+      visibility: {
+        sort: false,
+        ascending: true
+      },
+      name: {
+        sort: true,
+        ascending: true
+      }
+    };
     const pagination: NotesPagination = {
       page: 1,
       limit: 1
     };
 
-    const response1: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination);
+    const response1: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination, sorting);
     assert.match(response1.notes[0], note1);
     assert.match(response1.notes.length, 1);
     assert.match(response1.page, 1);
     assert.match(response1.totalPages, 3);
 
     pagination.page = 2;
-    const response2: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination);
+    const response2: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination, sorting);
     assert.match(response2.notes[0], note2);
     assert.match(response2.notes.length, 1);
     assert.match(response2.page, 2);
@@ -112,15 +121,16 @@ describe('NotesService getNotes.', () => {
 
     pagination.page = 1;
     pagination.limit = 2;
-    const response3: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination);
+    const response3: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination, sorting);
     assert.match(response3.notes.length, 2);
     assert.match(response3.page, 1);
     assert.match(response3.totalPages, 2);
 
     pagination.page = 3;
-    const response4: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination);
+    const response4: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination, sorting);
     // Returns 0 length array if page > totalPages.
     assert.match(response4.notes.length, 0);
+
+    getNotesCollectionStub.restore();
   });
 });
-

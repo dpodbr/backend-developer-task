@@ -10,44 +10,44 @@ export class NotesController {
       const sorting: NotesSorting = {
         visibility: {
           sort: false,
-          ascending: true
+          ascending: false
         },
         name: {
           sort: false,
-          ascending: true
+          ascending: false
         }
       };
 
-      if (req.query.sort !== undefined) {
-        switch (req.query.sort) {
-          case 'visibility': {
-            sorting.visibility.sort = true;
+      if (req.query?.sortVisibility !== undefined) {
+        sorting.visibility.sort = true;
+        switch (req.query.sortVisibility) {
+          case 'asc': {
+            sorting.visibility.ascending = true;
             break;
           }
-          case 'name': {
-            sorting.name.sort = true;
+          case 'desc': {
+            sorting.visibility.ascending = false;
             break;
           }
           default: {
-            throw new APIError(400, 'Invalid sorting option.');
+            throw new APIError(400, 'Invalid sorting direction option.');
           }
         }
+      }
 
-        if (req.query.dir !== undefined) {
-          switch (req.query.dir) {
-            case 'asc': {
-              sorting.visibility.ascending = true;
-              sorting.name.ascending = true;
-              break;
-            }
-            case 'desc': {
-              sorting.visibility.ascending = false;
-              sorting.name.ascending = false;
-              break;
-            }
-            default: {
-              throw new APIError(400, 'Invalid sorting direction option.');
-            }
+      if (req.query?.sortName !== undefined) {
+        sorting.name.sort = true;
+        switch (req.query.sortName) {
+          case 'asc': {
+            sorting.name.ascending = true;
+            break;
+          }
+          case 'desc': {
+            sorting.name.ascending = false;
+            break;
+          }
+          default: {
+            throw new APIError(400, 'Invalid sorting direction option.');
           }
         }
       }

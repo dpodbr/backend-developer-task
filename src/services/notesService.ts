@@ -28,56 +28,30 @@ export interface GetNotesResponse {
 
 export class NotesService {
   public async getNotes(userId?: string, pagination?: NotesPagination, sorting?: NotesSorting): Promise<GetNotesResponse> {
-    let notes: Note[] = [];
-
-    if (userId !== undefined) {
-      // Get users notes.
-      const userNotesQuery: any = {
-        ownerUserId: new ObjectId(userId)
-      };
-
-      const usersNotes: Note[] = (await databaseService.getNotesCollection().find(userNotesQuery).toArray()) as Note[];
-      if (usersNotes.length > 0) {
-        notes.push(...usersNotes);
-      }
-    }
-
-    // Get public notes.
-    const publicNotesQuery: any = {
-      visibility: 1
+    // Get users private and others public notes.
+    const query: any = {
+      $or: [
+        { ownerUserId: new ObjectId(userId) },
+        { visibility: 1 }
+      ]
     };
 
-    const publicNotes: Note[] = (await databaseService.getNotesCollection().find(publicNotesQuery).toArray()) as Note[];
-    if (publicNotes.length > 0) {
-      for (const publicNote of publicNotes) {
-        // Exclude possible duplicates from users notes.
-        if (!notes.some(note => note._id.equals(publicNote._id))) {
-          notes.push(publicNote);
-        }
-      }
-    }
-
+    const sort: any = {};
     if (sorting !== undefined) {
       if (sorting.visibility.sort) {
-        notes.sort((a, b) => {
-          if (sorting.visibility.ascending) {
-            return a.visibility - b.visibility;
-          } else {
-            return b.visibility - a.visibility;
-          }
-        });
+        sort.visibility = sorting.visibility.ascending ? 1 : -1;
       }
-
       if (sorting.name.sort) {
-        notes.sort((a, b) => {
-          if (sorting.name.ascending) {
-            return a.name.localeCompare(b.name);
-          } else {
-            return b.name.localeCompare(a.name);
-          }
-        });
+        sort.name = sorting.name.ascending ? 1 : -1;
       }
     }
+
+    if (Object.keys(sort).length === 0) {
+      // Default sort if no sorting options given.
+      sort.visibility = 1;
+    }
+
+    let notes: Note[] = (await databaseService.getNotesCollection().find(query).sort({ ...sort, _id: 1 }).toArray()) as Note[];
 
     let page: number = 1;
     let totalPages: number = 1;
@@ -98,23 +72,23 @@ export class NotesService {
 
   public async getNote(noteId: string, userId?: string): Promise<Note> {
     const query: any = {
-      _id: new ObjectId(noteId)
+      _id: new ObjectId(noteId),
+      $or: [
+        { ownerUserId: userId },
+        { visibility: 1 }
+      ]
     };
 
     const note: Note = (await databaseService.getNotesCollection().find(query).next()) as Note;
     if (note != null) {
-      if (note.ownerUserId.equals(new ObjectId(userId)) || note.visibility === 1) {
-        return note;
-      } else {
-        throw new APIError(403, 'This is a private note.');
-      }
+      return note;
     } else {
       throw new APIError(404, 'Note not found.');
     }
   }
 
   public async createNote(userId: string, folderId: string, note: Note): Promise<Note> {
-    // Check folder exists for this user.
+    // Check folder exists for this user. This will throw if folder is not returned.
     const folder: Folder = await foldersService.getFolder(userId, folderId);
 
     // Insert into notes.
@@ -137,7 +111,7 @@ export class NotesService {
       if (resultUsers?.modifiedCount > 0) {
         return note;
       } else {
-        // Updating users folders with note failed. Try to cleanup previously inserted note.
+        // Updating users folder with note failed. Try to cleanup previously inserted note.
         const deleteQuery = {
           _id: note._id
         };
@@ -151,69 +125,52 @@ export class NotesService {
 
   public async updateNote(userId: string, noteId: string, note: Note): Promise<Note> {
     const query: any = {
-      _id: new ObjectId(noteId)
+      _id: new ObjectId(noteId),
+      ownerUserId: new ObjectId(userId)
     };
-    const storedNote: Note = (await databaseService.getNotesCollection().find(query).next()) as Note;
-    if (storedNote != null) {
-      // Check note ownership before updating.
-      if (storedNote.ownerUserId.equals(userId)) {
-        const update: any = {
-          $set: {
-            name: note.name,
-            visibility: note.visibility,
-            type: note.type,
-            text: note.text,
-            items: note.items
-          }
-        };
-        const result: any = (await databaseService.getNotesCollection().updateOne(query, update));
-        if (result?.modifiedCount > 0) {
-          return await this.getNote(noteId, userId);
-        } else {
-          throw new APIError(500, 'Note update failed.');
-        }
-      } else {
-        throw new APIError(403, 'Note owner and user mismatch.');
+    const update: any = {
+      $set: {
+        name: note.name,
+        visibility: note.visibility,
+        type: note.type,
+        text: note.text,
+        items: note.items
       }
+    };
+
+    const result: any = (await databaseService.getNotesCollection().updateOne(query, update));
+    if (result?.matchedCount > 0) {
+      return await this.getNote(noteId, userId);
     } else {
-      throw new APIError(404, 'Note not found.');
+      throw new APIError(500, 'Note update failed.');
     }
   }
 
   public async deleteNote(userId: string, noteId: string): Promise<void> {
     const query: any = {
-      _id: new ObjectId(noteId)
+      _id: new ObjectId(noteId),
+      ownerUserId: new ObjectId(userId)
     };
 
-    const storedNote: Note = (await databaseService.getNotesCollection().find(query).next()) as Note;
-    if (storedNote != null) {
-      // Check note ownership before deleting.
-      if (storedNote.ownerUserId.equals(userId)) {
-        const resultNotes: any = (await databaseService.getNotesCollection().deleteOne(query));
-        if (resultNotes?.deletedCount > 0) {
-          // Delete note from user folder.
-          const usersQuery: any = {
-            _id: new ObjectId(userId),
-            'folders.notes': { $in: [new ObjectId(noteId)] }
-          };
-          const usersUpdate: any = {
-            $pull: {
-              'folders.$.notes': new ObjectId(noteId)
-            }
-          };
-
-          const resultUsers: any = (await databaseService.getUsersCollection().updateOne(usersQuery, usersUpdate));
-          if (resultUsers?.modifiedCount !== 1) {
-            throw new APIError(500, 'Deleting note from user folder failed.');
-          }
-        } else {
-          throw new APIError(500, 'Note deletion failed.');
+    const resultNotes: any = (await databaseService.getNotesCollection().deleteOne(query));
+    if (resultNotes?.deletedCount > 0) {
+      // Delete note from user folder.
+      const usersQuery: any = {
+        _id: new ObjectId(userId),
+        'folders.notes': { $in: [new ObjectId(noteId)] }
+      };
+      const usersUpdate: any = {
+        $pull: {
+          'folders.$.notes': new ObjectId(noteId)
         }
-      } else {
-        throw new APIError(403, 'Note owner and user mismatch.');
+      };
+
+      const resultUsers: any = (await databaseService.getUsersCollection().updateOne(usersQuery, usersUpdate));
+      if (resultUsers?.modifiedCount !== 1) {
+        throw new APIError(500, 'Deleting note from user folder failed.');
       }
     } else {
-      throw new APIError(404, 'Note not found.');
+      throw new APIError(500, 'Note deletion failed.');
     }
   }
 }

@@ -21,8 +21,8 @@ describe('NotesController getNotes.', () => {
   it('Should set valid sorting request.', async () => {
     const req: any = {
       query: {
-        sort: 'visibility',
-        dir: 'asc'
+        sortVisibility: 'asc',
+        sortName: 'desc'
       }
     };
     const res: any = mock();
@@ -36,6 +36,8 @@ describe('NotesController getNotes.', () => {
     const sorting: NotesSorting = getNotesStub.getCall(0).args[2];
     assert.match(sorting.visibility.sort, true);
     assert.match(sorting.visibility.ascending, true);
+    assert.match(sorting.name.sort, true);
+    assert.match(sorting.name.ascending, false);
   });
 
   it('Should set valid pagination request.', async () => {
@@ -58,29 +60,10 @@ describe('NotesController getNotes.', () => {
     assert.match(pagination.limit, 2);
   });
 
-  it('Should throw error for invalid sorting option.', async () => {
-    const req: any = {
-      query: {
-        sort: 'invalid sorting option',
-        dir: 'asc'
-      }
-    };
-    const res: any = mock();
-
-    await notesController.getNotes(req, res);
-
-    const error: APIError = handleErrorStub.getCall(0).args[1] as APIError;
-
-    assert.notCalled(getNotesStub);
-    assert.match(error.code, 400);
-    assert.match(error.message, 'Invalid sorting option.');
-  });
-
   it('Should throw error for invalid sorting direction option.', async () => {
     const req: any = {
       query: {
-        sort: 'name',
-        dir: 'invalid direction option'
+        sortVisibility: 'invalid sorting direction option'
       }
     };
     const res: any = mock();
@@ -88,6 +71,7 @@ describe('NotesController getNotes.', () => {
     await notesController.getNotes(req, res);
 
     const error: APIError = handleErrorStub.getCall(0).args[1] as APIError;
+
     assert.notCalled(getNotesStub);
     assert.match(error.code, 400);
     assert.match(error.message, 'Invalid sorting direction option.');
