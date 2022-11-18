@@ -91,13 +91,20 @@ export class NotesService {
     }
   }
 
-  public async createNote(userId: string, folderId: string, note: Note): Promise<Note> {
+  public async createNote(userId: string, folderId: string, userNote: Note): Promise<Note> {
     // Check folder exists for this user. This will throw if folder is not returned.
     const folder: Folder = await foldersService.getFolder(userId, folderId);
 
     // Insert into notes.
-    note._id = new ObjectId();
-    note.ownerUserId = new ObjectId(userId);
+    const note: Note = {
+      _id: new ObjectId(),
+      ownerUserId: new ObjectId(userId),
+      name: userNote.name ?? 'New note',
+      visibility: userNote.visibility ?? 0,
+      type: userNote.type ?? 0,
+      text: userNote.text ?? '',
+      items: userNote.items ?? []
+    };
     const resultNotes: any = (await databaseService.getNotesCollection().insertOne(note));
     if (resultNotes?.insertedId !== undefined) {
       // Link note with user folder.
@@ -127,26 +134,42 @@ export class NotesService {
     }
   }
 
-  public async updateNote(userId: string, noteId: string, note: Note): Promise<Note> {
+  public async updateNote(userId: string, noteId: string, userNote: Note): Promise<Note> {
+    const note: any = {};
+    // Dissallow null in addition to undefined.
+    if (userNote.name != null) {
+      note.name = userNote.name;
+    }
+    if (userNote.visibility != null) {
+      note.visibility = userNote.visibility;
+    }
+    if (userNote.type != null) {
+      note.type = userNote.type;
+    }
+    if (userNote.text != null) {
+      note.text = userNote.text;
+    }
+    if (userNote.items != null) {
+      note.items = userNote.items;
+    }
+
+    if (Object.keys(note).length === 0) {
+      throw new APIError(400, 'Missing required fields.');
+    }
+
     const query: any = {
       _id: new ObjectId(noteId),
       ownerUserId: new ObjectId(userId)
     };
     const update: any = {
-      $set: {
-        name: note.name,
-        visibility: note.visibility,
-        type: note.type,
-        text: note.text,
-        items: note.items
-      }
+      $set: note
     };
 
     const result: any = (await databaseService.getNotesCollection().updateOne(query, update));
     if (result?.matchedCount > 0) {
       return await this.getNote(noteId, userId);
     } else {
-      throw new APIError(500, 'Note update failed.');
+      throw new APIError(404, 'Note not found.');
     }
   }
 
@@ -174,7 +197,7 @@ export class NotesService {
         throw new APIError(500, 'Deleting note from user folder failed.');
       }
     } else {
-      throw new APIError(500, 'Note deletion failed.');
+      throw new APIError(404, 'Note not found.');
     }
   }
 }

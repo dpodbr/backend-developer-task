@@ -3,7 +3,7 @@ import { assert } from 'sinon';
 import * as request from 'superagent';
 import { apiUrl, deleteHelper, get, post, put } from './utils/helpers';
 
-describe('Folders CRUD.', () => {
+describe('Folders test.', () => {
   let createdFolderId: string;
 
   it('Should create a new folder.', async () => {

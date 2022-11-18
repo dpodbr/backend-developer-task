@@ -9,7 +9,7 @@
     "dev": "ts-node-dev -r tsconfig-paths/register index.ts",
     "lint": "eslint *.ts",
     "test": "ts-mocha -r tsconfig-paths/register test/unit/**/*.ts",
-    "test:integration": "ts-mocha -r tsconfig-paths/register test/integration/**/*.ts",
+    "test:integration": "ts-mocha -r tsconfig-paths/register test/integration/*.ts",
     "test:coverage": "nyc npm test"
   },
   "repository": {

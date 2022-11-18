@@ -52,8 +52,12 @@ export class FoldersService {
     }
   }
 
-  public async createFolder(userId: string, folder: Folder): Promise<Folder> {
-    folder._id = new ObjectId();
+  public async createFolder(userId: string, userFolder: Folder): Promise<Folder> {
+    const folder: Folder = {
+      _id: new ObjectId(),
+      name: userFolder.name ?? 'New folder',
+      notes: userFolder.notes ?? []
+    };
 
     const query: any = {
       _id: new ObjectId(userId)
@@ -74,6 +78,11 @@ export class FoldersService {
   }
 
   public async updateFolder(userId: string, folderId: string, folder: Folder): Promise<Folder> {
+    // Dissallow null in addition to undefined.
+    if (folder.name == null) {
+      throw new APIError(400, 'Missing required fields.');
+    }
+
     const query: any = {
       _id: new ObjectId(userId),
       'folders._id': new ObjectId(folderId)
