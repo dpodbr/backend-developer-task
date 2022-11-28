@@ -67,7 +67,7 @@ export class NotesService {
     if (filter?.text !== undefined) {
       query.$and.push({
         text: {
-          $regex: `${filter.text}`,
+          $regex: filter.text,
           $options: 'i'
         }
       });

@@ -1,8 +1,10 @@
 import { ObjectId } from 'mongodb';
 import { assert, SinonStub, stub } from 'sinon';
+import { Folder } from 'src/models/folder';
 import { Note } from 'src/models/note';
 import { databaseService } from 'src/services/databaseService';
-import { GetNotesResponse, NotesPagination, notesService, NotesSorting } from 'src/services/notesService';
+import { foldersService } from 'src/services/foldersService';
+import { GetNotesResponse, NotesFilter, NotesPagination, notesService, NotesSorting } from 'src/services/notesService';
 
 const userId1: ObjectId = new ObjectId();
 const userId2: ObjectId = new ObjectId();
@@ -140,5 +142,67 @@ describe('NotesService getNotes.', () => {
     limitStub.resetHistory();
 
     getNotesCollectionStub.restore();
+  });
+
+  it('Should be filtered with correct filtering options.', async () => {
+    const findStub: SinonStub = stub();
+    const getNotesCollectionStub: SinonStub = stub(databaseService, 'getNotesCollection');
+    databaseService.getNotesCollection = getNotesCollectionStub;
+
+    getNotesCollectionStub.returns({
+      countDocuments: stub().returns(notes.length),
+      find: findStub.returns({
+        sort: stub().returns({
+          skip: stub().returns({
+            limit: stub().returns({
+              toArray: stub().returns(notes)
+            })
+          })
+        })
+      })
+    });
+
+    const folder: Folder = {
+      _id: new ObjectId(),
+      name: 'New folder',
+      notes: [note1._id]
+    };
+    const getFolderStub: SinonStub = stub(foldersService, 'getFolder');
+    getFolderStub.returns(folder);
+
+    const filter: NotesFilter = {
+      folderId: '123456789123',
+      visibility: 1,
+      text: 'text'
+    };
+
+    const query: { $and: any[] } = {
+      $and: [
+        {
+          $or: [
+            { ownerUserId: userId1 },
+            { visibility: 1 }
+          ]
+        },
+        {
+          _id: {
+            $in: folder.notes
+          }
+        },
+        { visibility: filter.visibility },
+        {
+          text: {
+            $regex: filter.text,
+            $options: 'i'
+          }
+        }
+      ]
+    };
+
+    await notesService.getNotes(userId1, undefined, undefined, filter);
+    assert.calledWith(findStub, query);
+
+    getNotesCollectionStub.restore();
+    getFolderStub.restore();
   });
 });
