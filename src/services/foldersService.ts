@@ -4,9 +4,9 @@ import { APIError } from 'src/utils/apiError';
 import { databaseService } from './databaseService';
 
 export class FoldersService {
-  public async getFolders(userId: string): Promise<Folder[]> {
+  public async getFolders(userId: ObjectId): Promise<Folder[]> {
     const query: any = {
-      _id: new ObjectId(userId)
+      _id: userId
     };
     const projection: any = {
       folders: 1
@@ -20,9 +20,9 @@ export class FoldersService {
     }
   }
 
-  public async getFolder(userId: string, folderId: string): Promise<Folder> {
+  public async getFolder(userId: ObjectId, folderId: string): Promise<Folder> {
     const query: any = {
-      _id: new ObjectId(userId)
+      _id: userId
     };
     const projection: any = {
       folders: {
@@ -52,7 +52,7 @@ export class FoldersService {
     }
   }
 
-  public async createFolder(userId: string, userFolder: Folder): Promise<Folder> {
+  public async createFolder(userId: ObjectId, userFolder: Folder): Promise<Folder> {
     const folder: Folder = {
       _id: new ObjectId(),
       name: userFolder.name ?? 'New folder',
@@ -60,7 +60,7 @@ export class FoldersService {
     };
 
     const query: any = {
-      _id: new ObjectId(userId)
+      _id: userId
     };
 
     const update: any = {
@@ -77,14 +77,14 @@ export class FoldersService {
     }
   }
 
-  public async updateFolder(userId: string, folderId: string, folder: Folder): Promise<Folder> {
+  public async updateFolder(userId: ObjectId, folderId: string, folder: Folder): Promise<Folder> {
     // Dissallow null in addition to undefined.
     if (folder.name == null) {
       throw new APIError(400, 'Missing required fields.');
     }
 
     const query: any = {
-      _id: new ObjectId(userId),
+      _id: userId,
       'folders._id': new ObjectId(folderId)
     };
     const update: any = {
@@ -103,12 +103,12 @@ export class FoldersService {
     }
   }
 
-  public async deleteFolder(userId: string, folderId: string): Promise<void> {
+  public async deleteFolder(userId: ObjectId, folderId: string): Promise<void> {
     // Get folder to get a list of notes in the folder.
     const folder: Folder = await this.getFolder(userId, folderId);
 
     const query: any = {
-      _id: new ObjectId(userId)
+      _id: userId
     };
     const update: any = {
       $pull: {

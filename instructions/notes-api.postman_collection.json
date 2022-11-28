@@ -46,13 +46,13 @@
 					"type": "basic",
 					"basic": [
 						{
-							"key": "username",
-							"value": "nezaga",
+							"key": "password",
+							"value": "davidpo",
 							"type": "string"
 						},
 						{
-							"key": "password",
-							"value": "nezaga",
+							"key": "username",
+							"value": "davidpo",
 							"type": "string"
 						}
 					]
@@ -60,7 +60,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8000/folders/6372178d2626d6aa42877885",
+					"raw": "http://localhost:8000/folders/6372149b2626d6aa4287787a",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -68,7 +68,7 @@
 					"port": "8000",
 					"path": [
 						"folders",
-						"6372178d2626d6aa42877885"
+						"6372149b2626d6aa4287787a"
 					]
 				}
 			},
@@ -147,7 +147,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/folders/6374f27fabbabe755511eb84",
+					"raw": "http://localhost:8000/folders/6384f8642db72e31fe69084b",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -155,7 +155,7 @@
 					"port": "8000",
 					"path": [
 						"folders",
-						"6374f27fabbabe755511eb84"
+						"6384f8642db72e31fe69084b"
 					]
 				}
 			},
@@ -191,7 +191,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/folders/6374f27fabbabe755511eb84",
+					"raw": "http://localhost:8000/folders/6384f8642db72e31fe69084b",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -199,7 +199,7 @@
 					"port": "8000",
 					"path": [
 						"folders",
-						"6374f27fabbabe755511eb84"
+						"6384f8642db72e31fe69084b"
 					]
 				}
 			},
@@ -240,7 +240,7 @@
 			"response": []
 		},
 		{
-			"name": "Get notes pagination sorting",
+			"name": "Get notes pagination sorting filtering",
 			"request": {
 				"auth": {
 					"type": "basic",
@@ -260,7 +260,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8000/notes?page=1&limit=3&sortVisibility=desc&sortName=asc",
+					"raw": "http://localhost:8000/notes?page=1&limit=3&sortVisibility=asc&sortName=asc&filterFolderId=6372149b2626d6aa4287787a&filterVisibility=0&filterText=text",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -280,11 +280,23 @@
 						},
 						{
 							"key": "sortVisibility",
-							"value": "desc"
+							"value": "asc"
 						},
 						{
 							"key": "sortName",
 							"value": "asc"
+						},
+						{
+							"key": "filterFolderId",
+							"value": "6372149b2626d6aa4287787a"
+						},
+						{
+							"key": "filterVisibility",
+							"value": "0"
+						},
+						{
+							"key": "filterText",
+							"value": "text"
 						}
 					]
 				}
@@ -312,7 +324,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8000/notes/6374b82d67adfc9f54a16380",
+					"raw": "http://localhost:8000/notes/6374bbbf67adfc9f54a16389",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -320,7 +332,7 @@
 					"port": "8000",
 					"path": [
 						"notes",
-						"6374b82d67adfc9f54a16380"
+						"6374bbbf67adfc9f54a16389"
 					]
 				}
 			},
@@ -334,12 +346,12 @@
 					"basic": [
 						{
 							"key": "password",
-							"value": "larisapo",
+							"value": "davidpo",
 							"type": "string"
 						},
 						{
 							"key": "username",
-							"value": "larisapo",
+							"value": "davidpo",
 							"type": "string"
 						}
 					]
@@ -356,7 +368,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/notes/637217fd2626d6aa42877888",
+					"raw": "http://localhost:8000/notes/6372149b2626d6aa4287787a",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -364,7 +376,7 @@
 					"port": "8000",
 					"path": [
 						"notes",
-						"637217fd2626d6aa42877888"
+						"6372149b2626d6aa4287787a"
 					]
 				}
 			},
@@ -392,7 +404,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"items\": [],\n  \"name\": \"Davids uncategorized private text note\",\n  \"text\": \"Text note\",\n  \"type\": 0,\n  \"visibility\": 0\n}",
+					"raw": "{\n  \"items\": [\"test\"],\n  \"name\": \"Davids updated text note\",\n  \"text\": \"Text update\",\n  \"type\": 0,\n  \"visibility\": 0\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -400,7 +412,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/notes/637219d52626d6aa4287788d",
+					"raw": "http://localhost:8000/notes/6384f9a02db72e31fe69084c",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -408,7 +420,7 @@
 					"port": "8000",
 					"path": [
 						"notes",
-						"637219d52626d6aa4287788d"
+						"6384f9a02db72e31fe69084c"
 					]
 				}
 			},

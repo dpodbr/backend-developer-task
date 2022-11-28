@@ -55,32 +55,25 @@ describe('NotesService getNotes.', () => {
     });
 
     const sorting: NotesSorting = {
-      visibility: {
-        sort: true,
-        ascending: true
-      },
-      name: {
-        sort: false,
-        ascending: true
-      }
+      visibility: 1,
+      name: undefined
     };
 
-    await notesService.getNotes(userId1.toString(), undefined, undefined);
+    await notesService.getNotes(userId1, undefined, undefined);
     assert.calledWith(sortStub, { visibility: 1, _id: 1 });
     sortStub.resetHistory();
 
-    await notesService.getNotes(userId1.toString(), undefined, sorting);
+    await notesService.getNotes(userId1, undefined, sorting);
     assert.calledWith(sortStub, { visibility: 1, _id: 1 });
     sortStub.resetHistory();
 
-    sorting.visibility.ascending = false;
-    await notesService.getNotes(userId1.toString(), undefined, sorting);
+    sorting.visibility = -1;
+    await notesService.getNotes(userId1, undefined, sorting);
     assert.calledWith(sortStub, { visibility: -1, _id: 1 });
     sortStub.resetHistory();
 
-    sorting.name.sort = true;
-    sorting.name.ascending = true;
-    await notesService.getNotes(userId1.toString(), undefined, sorting);
+    sorting.name = 1;
+    await notesService.getNotes(userId1, undefined, sorting);
     assert.calledWith(sortStub, { visibility: -1, name: 1, _id: 1 });
 
     getNotesCollectionStub.restore();
@@ -105,22 +98,12 @@ describe('NotesService getNotes.', () => {
       })
     });
 
-    const sorting: NotesSorting = {
-      visibility: {
-        sort: false,
-        ascending: true
-      },
-      name: {
-        sort: true,
-        ascending: true
-      }
-    };
     const pagination: NotesPagination = {
       page: 1,
       limit: 1
     };
 
-    const response1: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination, sorting);
+    const response1: GetNotesResponse = await notesService.getNotes(userId1, pagination);
     assert.calledWith(skipStub, 0);
     assert.calledWith(limitStub, 1);
     assert.match(response1.page, 1);
@@ -129,7 +112,7 @@ describe('NotesService getNotes.', () => {
     limitStub.resetHistory();
 
     pagination.page = 2;
-    const response2: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination, sorting);
+    const response2: GetNotesResponse = await notesService.getNotes(userId1, pagination);
     assert.calledWith(skipStub, 1);
     assert.calledWith(limitStub, 1);
     assert.match(response2.page, 2);
@@ -139,7 +122,7 @@ describe('NotesService getNotes.', () => {
 
     pagination.page = 1;
     pagination.limit = 2;
-    const response3: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination, sorting);
+    const response3: GetNotesResponse = await notesService.getNotes(userId1, pagination);
     assert.calledWith(skipStub, 0);
     assert.calledWith(limitStub, 2);
     assert.match(response3.page, 1);
@@ -148,7 +131,7 @@ describe('NotesService getNotes.', () => {
     limitStub.resetHistory();
 
     pagination.page = 3;
-    const response4: GetNotesResponse = await notesService.getNotes(userId1.toString(), pagination, sorting);
+    const response4: GetNotesResponse = await notesService.getNotes(userId1, pagination);
     assert.calledWith(skipStub, 4);
     assert.calledWith(limitStub, 2);
     assert.match(response4.page, 3);

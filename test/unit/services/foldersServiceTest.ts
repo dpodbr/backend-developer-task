@@ -6,7 +6,7 @@ import { foldersService } from 'src/services/foldersService';
 import { APIError } from 'src/utils/apiError';
 
 describe('FoldersService getFolder.', () => {
-  const userId: string = new ObjectId().toString();
+  const userId: ObjectId = new ObjectId();
   const folder1: Folder = {
     _id: new ObjectId(),
     name: 'Test folder 1',

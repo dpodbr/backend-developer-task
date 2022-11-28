@@ -34,10 +34,8 @@ describe('NotesController getNotes.', () => {
     await notesController.getNotes(req, res);
 
     const sorting: NotesSorting = getNotesStub.getCall(0).args[2];
-    assert.match(sorting.visibility.sort, true);
-    assert.match(sorting.visibility.ascending, true);
-    assert.match(sorting.name.sort, true);
-    assert.match(sorting.name.ascending, false);
+    assert.match(sorting.visibility, 1);
+    assert.match(sorting.name, -1);
   });
 
   it('Should set valid pagination request.', async () => {

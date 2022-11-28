@@ -1,9 +1,10 @@
 import bcrypt from 'bcryptjs';
+import { ObjectId } from 'mongodb';
 import { assert, mock, SinonStub, stub } from 'sinon';
 import { authHandlerMiddleware } from 'src/middlewares/authHandlerMiddleware';
 import { logger } from 'src/utils/logger';
 
-const userId: string = '12345';
+const userId: ObjectId = new ObjectId();
 const username: string = 'davidpo';
 const password: string = 'davidpo';
 const hashedPassword: string = '$2a$10$2Vd9BXcLw/rckaHOUmmWP.87hMzr3WeKXdJkxO5LFBgbA.lyfW2Ue';
@@ -49,7 +50,7 @@ describe('AuthHandlerMiddleware authentication.', () => {
 
     await authHandlerMiddleware.authenticateCredentials(req, res, next);
     assert.called(next);
-    assert.match(req.userId, userId);
+    assert.match(userId.equals(req.userId), true);
   });
 
   it('Should reject invalid password.', async () => {

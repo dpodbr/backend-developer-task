@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
+import { ObjectId } from 'mongodb';
 import { Note } from 'src/models/note';
-import { GetNotesResponse, NotesPagination, notesService, NotesSorting } from 'src/services/notesService';
+import { GetNotesResponse, NotesFilter, NotesPagination, notesService, NotesSorting } from 'src/services/notesService';
 import { APIError } from 'src/utils/apiError';
 import { handleError } from 'src/utils/errorHandler';
 
@@ -8,25 +9,18 @@ export class NotesController {
   public async getNotes(req: Request, res: Response): Promise<void> {
     try {
       const sorting: NotesSorting = {
-        visibility: {
-          sort: false,
-          ascending: false
-        },
-        name: {
-          sort: false,
-          ascending: false
-        }
+        visibility: undefined,
+        name: undefined
       };
 
-      if (req.query?.sortVisibility !== undefined) {
-        sorting.visibility.sort = true;
+      if (req.query.sortVisibility !== undefined) {
         switch (req.query.sortVisibility) {
           case 'asc': {
-            sorting.visibility.ascending = true;
+            sorting.visibility = 1;
             break;
           }
           case 'desc': {
-            sorting.visibility.ascending = false;
+            sorting.visibility = -1;
             break;
           }
           default: {
@@ -35,15 +29,14 @@ export class NotesController {
         }
       }
 
-      if (req.query?.sortName !== undefined) {
-        sorting.name.sort = true;
+      if (req.query.sortName !== undefined) {
         switch (req.query.sortName) {
           case 'asc': {
-            sorting.name.ascending = true;
+            sorting.name = 1;
             break;
           }
           case 'desc': {
-            sorting.name.ascending = false;
+            sorting.name = -1;
             break;
           }
           default: {
@@ -63,7 +56,39 @@ export class NotesController {
         }
       }
 
-      const response: GetNotesResponse = await notesService.getNotes(req.userId, pagination, sorting);
+      const filter: NotesFilter = {
+        folderId: undefined,
+        visibility: undefined,
+        text: undefined
+      };
+
+      if (req.query.filterFolderId !== undefined) {
+        if (req.userId === undefined) {
+          throw new APIError(403, 'Unauthenticated users cannot filter by folders.');
+        }
+
+        const filterFolderId: string = req.query.filterFolderId as string ?? '';
+        if (ObjectId.isValid(filterFolderId)) {
+          filter.folderId = filterFolderId;
+        } else {
+          throw new APIError(400, 'Invalid folderId filter.');
+        }
+      }
+
+      if (req.query.filterVisibility !== undefined) {
+        const filterVisibility = Number(req.query.filterVisibility);
+        if (filterVisibility >= 0 && filterVisibility < 2) {
+          filter.visibility = filterVisibility;
+        } else {
+          throw new APIError(400, 'Invalid visibility filter.');
+        }
+      }
+
+      if (req.query.filterText !== undefined) {
+        filter.text = req.query.filterText as string;
+      }
+
+      const response: GetNotesResponse = await notesService.getNotes(req.userId, pagination, sorting, filter);
       res.status(200).json(response);
     } catch (err) {
       handleError('getNotes', err, res);
@@ -84,7 +109,7 @@ export class NotesController {
     try {
       const note: Note = req.body as Note;
       const folderId: string = req.params.folderId;
-      const createdNote: Note = await notesService.createNote(req.userId, folderId, note);
+      const createdNote: Note = await notesService.createNote(req.userId!, folderId, note);
       res.status(201).json(createdNote);
     } catch (err) {
       handleError('createNote', err, res);
@@ -95,7 +120,7 @@ export class NotesController {
     try {
       const noteId: string = req.params.id;
       const note: Note = req.body as Note;
-      const updatedNote: Note = await notesService.updateNote(req.userId, noteId, note);
+      const updatedNote: Note = await notesService.updateNote(req.userId!, noteId, note);
       res.status(200).json(updatedNote);
     } catch (err) {
       handleError('updateNote', err, res);
@@ -105,7 +130,7 @@ export class NotesController {
   public async deleteNote(req: Request, res: Response): Promise<void> {
     try {
       const noteId: string = req.params.id;
-      await notesService.deleteNote(req.userId, noteId);
+      await notesService.deleteNote(req.userId!, noteId);
       res.status(204).end();
     } catch (err) {
       handleError('deleteNote', err, res);

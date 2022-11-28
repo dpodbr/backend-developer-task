@@ -1,12 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
+import bcrypt from 'bcryptjs';
+import { NextFunction, Request, Response } from 'express';
+import { ObjectId } from 'mongodb';
 import { User } from 'src/models/user';
 import { usersService } from 'src/services/usersService';
-import bcrypt from 'bcryptjs';
 import { logger } from 'src/utils/logger';
 
 export class AuthHandlerMiddleware {
   private readonly saltRounds: number = 10;
-  private readonly credentials: any;
+  private readonly credentials: { [username: string]: { id: ObjectId; password: string } };
 
   constructor() {
     this.credentials = {};

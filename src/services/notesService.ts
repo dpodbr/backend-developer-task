@@ -10,14 +10,15 @@ export interface NotesPagination {
   limit: number;
 }
 
-export interface SortParams {
-  sort: boolean;
-  ascending: boolean;
+export interface NotesSorting {
+  visibility: number | undefined;
+  name: number | undefined;
 }
 
-export interface NotesSorting {
-  visibility: SortParams;
-  name: SortParams;
+export interface NotesFilter {
+  folderId: string | undefined;
+  visibility: number | undefined;
+  text: string | undefined;
 }
 
 export interface GetNotesResponse {
@@ -27,28 +28,49 @@ export interface GetNotesResponse {
 }
 
 export class NotesService {
-  public async getNotes(userId?: string, pagination?: NotesPagination, sorting?: NotesSorting): Promise<GetNotesResponse> {
+  public async getNotes(userId?: ObjectId, pagination?: NotesPagination, sorting?: NotesSorting, filter?: NotesFilter): Promise<GetNotesResponse> {
     // Get users private and others public notes.
-    const query = {
-      $or: [
-        { ownerUserId: new ObjectId(userId) },
-        { visibility: 1 }
-      ]
+    const query: { $and: any[] } = {
+      $and: [{
+        $or: [
+          { ownerUserId: userId },
+          { visibility: 1 }
+        ]
+      }]
     };
 
+    // Sorting.
     const sort: any = {};
-    if (sorting !== undefined) {
-      if (sorting.visibility.sort) {
-        sort.visibility = sorting.visibility.ascending ? 1 : -1;
-      }
-      if (sorting.name.sort) {
-        sort.name = sorting.name.ascending ? 1 : -1;
-      }
+    if (sorting?.visibility !== undefined) {
+      sort.visibility = sorting.visibility;
     }
-
+    if (sorting?.name !== undefined) {
+      sort.name = sorting.name;
+    }
     if (Object.keys(sort).length === 0) {
       // Default sort if no sorting options given.
       sort.visibility = 1;
+    }
+
+    // Filtering.
+    if (filter?.folderId !== undefined && userId !== undefined) {
+      const folder: Folder = await foldersService.getFolder(userId, filter.folderId);
+      query.$and.push({
+        _id: {
+          $in: folder.notes
+        }
+      });
+    }
+    if (filter?.visibility !== undefined) {
+      query.$and.push({ visibility: filter.visibility });
+    }
+    if (filter?.text !== undefined) {
+      query.$and.push({
+        text: {
+          $regex: `${filter.text}`,
+          $options: 'i'
+        }
+      });
     }
 
     const notes: Note[] = (await databaseService
@@ -74,7 +96,7 @@ export class NotesService {
     };
   }
 
-  public async getNote(noteId: string, userId?: string): Promise<Note> {
+  public async getNote(noteId: string, userId?: ObjectId): Promise<Note> {
     const query: any = {
       _id: new ObjectId(noteId),
       $or: [
@@ -91,14 +113,14 @@ export class NotesService {
     }
   }
 
-  public async createNote(userId: string, folderId: string, userNote: Note): Promise<Note> {
+  public async createNote(userId: ObjectId, folderId: string, userNote: Note): Promise<Note> {
     // Check folder exists for this user. This will throw if folder is not returned.
     const folder: Folder = await foldersService.getFolder(userId, folderId);
 
     // Insert into notes.
     const note: Note = {
       _id: new ObjectId(),
-      ownerUserId: new ObjectId(userId),
+      ownerUserId: userId,
       name: userNote.name ?? 'New note',
       visibility: userNote.visibility ?? 0,
       type: userNote.type ?? 0,
@@ -109,7 +131,7 @@ export class NotesService {
     if (resultNotes?.insertedId !== undefined) {
       // Link note with user folder.
       const query: any = {
-        _id: new ObjectId(userId),
+        _id: userId,
         'folders._id': folder._id
       };
       const update: any = {
@@ -134,7 +156,7 @@ export class NotesService {
     }
   }
 
-  public async updateNote(userId: string, noteId: string, userNote: Note): Promise<Note> {
+  public async updateNote(userId: ObjectId, noteId: string, userNote: Note): Promise<Note> {
     const note: any = {};
     // Dissallow null in addition to undefined.
     if (userNote.name != null) {
@@ -159,7 +181,7 @@ export class NotesService {
 
     const query: any = {
       _id: new ObjectId(noteId),
-      ownerUserId: new ObjectId(userId)
+      ownerUserId: userId
     };
     const update: any = {
       $set: note
@@ -173,17 +195,17 @@ export class NotesService {
     }
   }
 
-  public async deleteNote(userId: string, noteId: string): Promise<void> {
+  public async deleteNote(userId: ObjectId, noteId: string): Promise<void> {
     const query: any = {
       _id: new ObjectId(noteId),
-      ownerUserId: new ObjectId(userId)
+      ownerUserId: userId
     };
 
     const resultNotes: any = (await databaseService.getNotesCollection().deleteOne(query));
     if (resultNotes?.deletedCount > 0) {
       // Delete note from user folder.
       const usersQuery: any = {
-        _id: new ObjectId(userId),
+        _id: userId,
         'folders.notes': { $in: [new ObjectId(noteId)] }
       };
       const usersUpdate: any = {
